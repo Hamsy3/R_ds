@@ -1,0 +1,64 @@
+---
+title: "LAB06"
+author: "Agievets"
+date: "2023-11-21"
+output: html_document
+---
+
+```{r}
+library("e1071")
+data <-read.csv("nbtrain.csv", header=TRUE)
+dim(data)
+train_data <- data[1:9010,]
+test_data <- data[9011:10010,]
+print(dim(train_data))
+print(dim(test_data))
+print(dim(data))
+```
+```{r}
+nb <- naiveBayes(income ~ age + sex + educ, train_data)
+```
+```{r}
+nb
+```
+```{r}
+test <- predict (nb, test_data)
+```
+```{r}
+install.packages('caret')
+library(caret)
+confusionMatrix(test, as.factor(test_data$income), dnn = c("Predicted", "Actual"))
+```
+```{r}
+nb2 <- naiveBayes(sex ~ age + educ + income, train_data)
+test2 <- predict (nb2, test_data)
+confusionMatrix(test2, as.factor(test_data$sex), dnn = c("Predicted", "Actual"))
+```
+```{r}
+nb2
+```
+```{r}
+nb2
+```
+```{r}
+male <- train_data[train_data$sex == "M",]
+female <- train_data[train_data$sex == "F",]
+dim(female)
+dim(male)
+```
+```{r}
+male_random = male[sample(nrow(male), 3500), ]
+female_random = female[sample(nrow(female), 3500), ]
+train2 <- rbind(male_random, female_random)
+dim(train2)
+```
+```{r}
+nb_rand <- naiveBayes(sex ~ age + educ + income, train2)
+```
+```{r}
+nb_rand
+```
+```{r}
+test_rand <- predict (nb_rand, test_data)
+confusionMatrix(test_rand, as.factor(test_data$sex), dnn = c("Predicted", "Actual"))
+```

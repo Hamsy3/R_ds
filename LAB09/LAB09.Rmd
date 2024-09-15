@@ -1,0 +1,91 @@
+---
+title: "LAB09"
+author: "Agievets"
+date: "2023-12-11"
+output: html_document
+---
+4.11a
+```{r}
+carefully: 1,
+read: 1,
+word: 1,
+statement: 1,
+notice: 1,
+bank: 3,
+sent: 1,
+missed: 1,
+yoyodyne: 1,
+close: 1
+accounts: 1,
+especially: 1,
+overseas: 1
+```
+4.11b
+```{r}
+care: 1,
+read: 1,
+word: 1,
+statement: 1,
+notic: 1,
+bank: 3,
+sent: 1,
+miss: 1,
+yoyodyn: 1,
+close: 1
+accounts: 1,
+especi: 1,
+oversea: 1
+```
+```{r}
+install.packages("tm")
+library("tm")
+install.packages("wordcloud")
+library("wordcloud")
+data("crude")
+```
+```{r}
+second_document <- content(crude[[2]])
+second_document
+```
+```{r}
+#10 words: OPEC, meet, oil, price, issue, pessimistic, market, demand, slackens, cheating
+```
+b
+```{r}
+corpus_b <- Corpus(VectorSource(second_document))
+dtm_b <- TermDocumentMatrix(corpus_b)
+as.matrix(dtm_b)
+top_words_b<- head(sort(rowSums(as.matrix(dtm_b)), decreasing = TRUE), 20)
+wordcloud(names(top_words_b), top_words_b)
+```
+c
+```{r}
+corpus_c <- Corpus(VectorSource(second_document))
+corpus_c <- tm_map(corpus_c, removeWords, stopwords("english"))
+corpus_c <- tm_map(corpus_c, removePunctuation)
+corpus_c <- tm_map(corpus_c, removeNumbers)
+dtm_c <- TermDocumentMatrix(corpus_c)
+top_words_c <- head(sort(rowSums(as.matrix(dtm_c)), decreasing = TRUE), 20)
+wordcloud(names(top_words_c), top_words_c)
+```
+d
+```{r}
+corpus_d <- Corpus(VectorSource(crude$content))
+dtm_d <- TermDocumentMatrix(corpus_d, control = list(weighting = weightTfIdf))
+dtm_combd <- as.matrix(dtm_d)[rownames(as.matrix(dtm_d)) %in% rownames(as.matrix(dtm_b)), 2]
+top_words_d <- head(sort(dtm_combd, decreasing = TRUE), 20)
+wordcloud(names(top_words_d), top_words_d)
+```
+
+e
+```{r}
+corpus_e <- Corpus(VectorSource(crude$content))
+corpus_e <- tm_map(corpus_e, removeWords, stopwords("english"))
+corpus_e <- tm_map(corpus_e, removePunctuation)
+corpus_e <- tm_map(corpus_e, removeNumbers)
+dtm_e <- TermDocumentMatrix(corpus_e, control = list(weighting = weightTfIdf))
+dtm_combe <- as.matrix(dtm_e)[rownames(as.matrix(dtm_e)) %in% rownames(as.matrix(dtm_c)), 2]
+top_words_e <- head(sort(dtm_combe, decreasing = TRUE), 20)
+wordcloud(names(top_words_e), top_words_e)
+```
+

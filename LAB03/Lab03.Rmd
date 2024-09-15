@@ -1,0 +1,70 @@
+---
+title: "Lab03"
+author: "Agievets"
+date: "2023-11-13"
+output: html_document
+---
+
+```{r}
+library('arules')
+library('arulesViz')
+data <-read.transactions ("AssociationRules.csv",rm.duplicates = FALSE,format="basket",sep=" ",cols=NULL)
+```
+```{r}
+data@itemInfo
+```
+```{r}
+summary(data)
+```
+```{r}
+rules <-apriori(data, parameter = list(supp = 0.01, conf = 0,target = "rules", maxlen=25))
+#11524
+rules <-apriori(data, parameter = list(supp = 0.01, conf = 0.5,target = "rules", maxlen=25))
+#1165
+```
+```{r}
+plot(rules, control = list(jitter =2)
+```
+```{r}
+plot(rules, method= "scatterplot", c("support","lift"), shading = "confidence", control=list(jitter=2))
+```
+```{r}
+plot(rules, method= "scatterplot", c("support","lift"), shading = "confidence", control=list(max=2000, jitter=2), engine = 'plotly')
+```
+```{r}
+subrules <- rules[quality(rules)$confidence > 0.8]
+plot(subrules, control = list(jitter = 2))
+inspect(subrules)
+```
+```{r}
+rulesLift <- tail(sort(subrules, by = "lift"), 10)
+inspect(rulesLift)
+plot(rulesLift, method= "scatterplot", c("support","lift"), shading = "confidence", engine = 'plotly')
+```
+```{r}
+plot(subrules, method = "matrix", measure = c("confidence","lift"), engine = "grid", shading = c("lift","confidence"))
+inspect(subrules)
+```
+```{r}
+high <- head(sort(rules, by="lift"), 3)
+inspect(high)
+plot(high, method="graph", engine='igraph')
+```
+```{r}
+train <- head(data, 8000)
+test <- tail(data, 2000)
+rulestr <-apriori(train, parameter = list(supp = 0.01, conf = 0,target = "rules", maxlen=25))
+rulests <-apriori(test, parameter = list(supp = 0.01, conf = 0,target = "rules", maxlen=25))
+```
+```{r}
+int <- intersect(rulestr, rulests)
+```
+```{r}
+inspect(rulestr)
+```
+```{r}
+inspect(rulests)
+```
+```{r}
+inspect(int)
+```

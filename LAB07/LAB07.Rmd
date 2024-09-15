@@ -1,0 +1,76 @@
+---
+title: "LAB07"
+author: "Agievets"
+date: "2023-11-26"
+output: html_document
+---
+```{r}
+install.packages("rpart.plot")
+install.packages("ROCR")
+library(rpart)
+library(rpart.plot)
+library(caret)
+library(ROCR)
+```
+```{r}
+data <- read.csv("survey.csv", header = TRUE)
+dim(data)
+head(data)
+train_data <- data[1:600,]
+dim(train_data)
+test_data <- data[601:750,]
+dim(test_data)
+```
+```{r}
+tree <- rpart(MYDEPV ~ Price + Income + Age, data = train_data, method = "class", parms = list(split = "information"), control = rpart.control(xval = 3))
+```
+```{r}
+summary(tree)
+printcp(tree)
+```
+```{r}
+rpart.plot(tree, type=4, extra=1)
+```
+```{r}
+predicted_auc <- predict(tree, newdata=train_data, type="prob")[, 2]
+predictions_auc <- prediction(predicted_auc, train_data$MYDEPV)
+predicted <- predict(tree, newdata=train_data, type="class")
+```
+```{r}
+confusionMatrix(predicted, as.factor(train_data$MYDEPV), dnn = c("Predicted", "Actual"))
+```
+```{r}
+roc <- performance(predictions_auc, "tpr", "fpr")
+plot(roc, main = "ROC Curve", col = "blue", lwd = 2)
+auc_value <- performance(predictions_auc, "auc")@y.values[[1]]
+print(auc_value, digits = 20)
+```
+```{r}
+predicted_test <- predict(tree, newdata=test_data, type="class")
+confusionMatrix(predicted_test, as.factor(test_data$MYDEPV), dnn = c("Predicted", "Actual"))
+```
+```{r}
+tree_gini <- rpart(MYDEPV ~ Price + Income + Age, data = train_data, method = "class", parms = list(split = "gini"), control = rpart.control(xval = 3))
+rpart.plot(tree_gini, type=4, extra=1)
+rpart.plot(tree, type=4, extra=1)
+```
+```{r}
+cp_min <- tree_gini$cptable[which.min(tree_gini$cptable[, "xerror"]), "CP"]
+pruned_tree <- prune(tree_gini, cp = cp_min)
+rpart.plot(pruned_tree, type=4, extra=1)
+```
+```{r}
+predicted_pruned = predict(pruned_tree, type="class")
+confusionMatrix(predicted_pruned, as.factor(train_data$MYDEPV), dnn = c("Predicted", "Actual"))
+confusionMatrix(predicted_pruned, as.factor(test_data$MYDEPV), dnn = c("Predicted", "Actual"))
+```
+```{r}
+predicted_test2 <- predict(pruned_tree, newdata=test_data, type="class")
+predicted_test_gini <- predict(tree_gini, newdata=test_data, type="class")
+confusionMatrix(predicted_test2, as.factor(test_data$MYDEPV), dnn = c("Predicted", "Actual"))
+confusionMatrix(predicted_test_gini, as.factor(test_data$MYDEPV), dnn = c("Predicted", "Actual"))
+```
+```{r}
+20/150
+```
+0.101666

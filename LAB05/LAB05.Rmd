@@ -1,0 +1,43 @@
+---
+title: "LAB05"
+author: "Agievets"
+date: "2023-11-25"
+output: html_document
+---
+
+#data prep
+```{r}
+data <- read.csv("survey.csv", header = TRUE)
+data$price20 <- with(data, ifelse(data$Price == 20, 1, 0))
+data$price30 <- with(data, ifelse(data$Price == 30, 1, 0))
+data <- data[-2]
+```
+```{r}
+head(data)
+```
+```{r}
+log_reg <- glm(MYDEPV ~.,family=binomial(link='logit'),data=data)
+summary(log_reg)
+```
+```{r}
+print((exp(log_reg$coefficients["Income"])-1)*100)
+print((exp(log_reg$coefficients["price30"])-1)*100)
+```
+```{r}
+data$odds_ratio <- exp(log_reg$coefficients["(Intercept)"] + log_reg$coefficients["Income"] * data$Income +
+                        log_reg$coefficients["Age"] * data$Age +
+                         log_reg$coefficients["price20"] * data$price20 +
+                         log_reg$coefficients["price30"] * data$price30) 
+data$prediction <- data$odds_ratio / (1 + data$odds_ratio)
+```
+```{r}
+sum(data$MYDEPV)
+sum(data$prediction)
+```
+```P
+```{r}
+odd_r = exp(log_reg$coefficients["(Intercept)"] + 80.540*log_reg$coefficients["Income"] +
+              64*log_reg$coefficients["Age"])
+prob = odd_r/(1+odd_r)
+print(prob)
+```

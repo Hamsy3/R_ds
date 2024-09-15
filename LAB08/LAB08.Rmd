@@ -1,0 +1,95 @@
+---
+title: "LAB08"
+author: "Agievets"
+date: "2023-12-02"
+output: html_document
+---
+
+```{r}
+data <- read.table("jj.dat", sep = "\n")
+```
+```{r}
+eps  <- ts(data, start = 1960, frequency = 4)
+```
+```{r}
+plot(eps,type="l", main = "eps")
+```
+#detrend
+```{r}
+diff_eps <- diff(eps)
+plot (diff_eps, type="l", main="detrended eps")
+```
+```{r}
+plot(log10(eps),type="l", main = "log_eps")
+```
+```{r}
+diff_eps_log <- diff(log10(eps))
+plot (diff_eps_log, type="l", main="detrended_log eps")
+```
+```{r}
+acf(diff_eps_log)
+```
+```{r}
+pacf(diff_eps_log)
+```
+#p d q 0 или 4 p
+```{r}
+arima_model <- arima(diff_eps_log, order = c(4, 0, 0))
+AIC(arima_model)
+```
+#AR4
+```{r}
+ts.sim_AR4 <- arima.sim(n = 10000, list(ar = c(0.9, -0.5, 0.2, -0.3)))
+plot(ts.sim_AR4, main = "AR(4)")
+acf(ts.sim_AR4, main = "ACF for AR(4)")
+pacf(ts.sim_AR4, main = "PACF for AR(4)")
+```
+#AR3
+```{r}
+ts.sim_AR3 <- arima.sim(n = 10000, list(ar = c(0.9, -0.5, 0.2)))
+plot(ts.sim_AR3, main = "AR(3)")
+acf(ts.sim_AR3, main = "ACF for AR(3)")
+pacf(ts.sim_AR3, main = "PACF for AR(3)")
+```
+#AR2
+```{r}
+ts.sim_AR2 <- arima.sim(n = 10000, list(ar = c(0.9, -0.5)))
+plot(ts.sim_AR2, main = "AR(2)")
+acf(ts.sim_AR2, main = "ACF for AR(2)")
+pacf(ts.sim_AR2, main = "PACF for AR(2)")
+```
+#AR1
+```{r}
+ts.sim_AR1 <- arima.sim(n = 10000, list(ar = c(0.9)))
+plot(ts.sim_AR1, main = "AR(1)")
+acf(ts.sim_AR1, main = "ACF for AR(1)")
+pacf(ts.sim_AR1, main = "PACF for AR(1)")
+```
+#MA4
+```{r}
+ts.sim_MA4 <- arima.sim(n = 10000, list( ma = c(-1.9, 1.7, -1.5, 1.5)))
+plot(ts.sim_MA4, main = "MA(4)")
+acf(ts.sim_MA4, main = "ACF for MA(4)")
+pacf(ts.sim_MA4, main = "PACF for MA(4)")
+```
+#MA3
+```{r}
+ts.sim_MA3 <- arima.sim(n = 10000, list( ma = c(-1.9, 1.7, -1.5)))
+plot(ts.sim_MA3, main = "MA(3)")
+acf(ts.sim_MA3, main = "ACF for MA(3)")
+pacf(ts.sim_MA3, main = "PACF for MA(3)")
+```
+#MA2
+```{r}
+ts.sim_MA2 <- arima.sim(n = 10000, list( ma = c(-1.9, 1.7)))
+plot(ts.sim_MA2, main = "MA(2)")
+acf(ts.sim_MA2, main = "ACF for MA(2)")
+pacf(ts.sim_MA2, main = "PACF for MA(2)")
+```
+#MA1
+```{r}
+ts.sim_MA1 <- arima.sim(n = 10000, list( ma = c(-1.9)))
+plot(ts.sim_MA1, main = "MA(1)")
+acf(ts.sim_MA1, main = "ACF for MA(1)")
+pacf(ts.sim_MA1, main = "PACF for MA(1)")
+```

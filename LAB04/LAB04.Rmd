@@ -1,0 +1,37 @@
+---
+title: "LAB04"
+author: "Agievets"
+date: "2023-11-20"
+output: html_document
+---
+
+```{r}
+data <- read.csv("zeta.csv", header=TRUE)
+data <- data[!duplicated(data$meanhouseholdincome),]
+data <- data[, -2:-3]
+data <- subset(data, data$meaneducation >8 & data$meaneducation < 18 & data$meanhouseholdincome >10000 & data$meanhouseholdincome < 200000 & data$meanemployment >0 & data$meanemployment < 3 & data$meanage > 20 & data$meanage < 60)
+summary(data)
+names(data) <- c('X','age', 'education', 'emplyment', 'meanhouseholincome')
+data$log_income <- log10(data$meanhouseholincome)
+```
+
+```{r}
+library(ggplot2)
+ggplot(data = data, aes(x=data$age, y = data$log_income)) + geom_point() + geom_hex() + ggtitle("effect of age on log_income") +xlab("age") + ylab("log_income")
+```
+```{r}
+lm_age = lm(data$log_income~data$age, data = data)
+summary(lm_age)
+```
+```{r}
+ggplot(data = data, aes(x=data$education, y = data$log_income)) + geom_point() + geom_hex() + ggtitle("effect of age on log_income") +xlab("age") + ylab("log_income")
+lm_ed = lm(data$log_income~data$education, data = data)
+summary(lm_ed)
+```
+```{r}
+lm_mult = lm(data$log_income~data$education +data$age +data$emplyment, data = data)
+summary(lm_mult)
+```
+```{r}
+ggplot(data, aes(data$log_income, lm_mult$fitted.values)) + geom_point() + geom_hex() + ylab("predicted") + xlab("real") + ggtitle("Log_income") + geom_abline(slope = 1, intercept = 0, colour = "red")
+```

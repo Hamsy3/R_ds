@@ -1,0 +1,63 @@
+---
+title: "lab2-3"
+author: "Agievets"
+date: "2023-10-31"
+output: html_document
+---
+
+```{r}
+lab1 <-read.table("zipIncome.txt", sep="|", header=TRUE)
+head(lab1, n=10)
+```
+
+```{r}
+tail(lab1, n=10)
+dim(lab1)
+typeof(lab1)
+class(lab1)
+```
+
+```{r}
+colnames(lab1) <- c("zipCode", "income")
+head(lab1, n=10)
+```
+
+```{r}
+summary(lab1)
+sd(lab1$income)
+```
+
+```{r}
+library(ggplot2)
+```
+
+```{r}
+ggplot(data = lab1, aes(x = zipCode, y = income)) + geom_point()
+plot(lab1$zipCode, lab1$income, xlab = "zipCode", ylab="income")
+```
+```{r}
+outlier_lab <- lab1[lab1$income > 7000 & lab1$income < 200000, ]
+summary(outlier_lab)
+```
+```{r}
+ggplot(data = outlier_lab, aes(x = zipCode, y = income, group = zipCode)) +
+  geom_boxplot() +
+  labs(title = "Average Household Income by Zip Code", x = "Zip Codes", y = "Income")
+```
+```{r}
+boxplot(outlier_lab$income ~ as.factor(outlier_lab$zipCode), main = "Average Household Income by Zip Code", xlab = "Zip Codes", ylab = "Income")
+boxplot(outlier_lab$income ~ as.factor(outlier_lab$zipCode), main = "Average Household Income by Zip Code", xlab = "Zip Codes", ylab = "Income", log="y")
+```
+```{r}
+ggplot(data = outlier_lab, aes(x = zipCode, y = income)) +
+  geom_point(position = "jitter", alpha = 0.2) +
+  scale_y_log10() +
+  labs(title = "Scatter Plot of Log Income by Zip Code", x = "Zip Code", y = "Log Income")
+```
+```{r}
+ggplot(data = outlier_lab, aes(x=as.factor(zipCode), y = income)) +
+  geom_point(aes(colour=factor(zipCode)), position="jitter", alpha=0.2) +
+  geom_boxplot(alpha=0.1, outlier.size=-Inf)+
+  scale_y_log10() +
+  labs(color="Region", x="Zip Code", y="Income", title="Average Income by Zip Code")
+```
